@@ -1,0 +1,43 @@
+schema_version = "1.2"
+artifacts = []
+
+[task]
+name = "heart-cgp/beam-pipeline-builder-refac-001"
+description = "Refactor Apache Beam PipelineOptions validation to use the Builder pattern"
+authors = [{ name = "CodeScaleBench" }]
+keywords = ["codescalebench", "refactor", "java"]
+
+[metadata]
+codescalebench_task_id = "beam-pipeline-builder-refac-001"
+origin_suite = "csb_sdlc_refactor"
+repo = "apache/beam"
+category = "refactor"
+language = "java"
+difficulty = "hard"
+source_task_dir = "/home/dylan/CodeScaleBench/benchmarks/csb/refactor/beam-pipeline-builder-refac-001"
+verification_command = "bash /tests/test.sh"
+verification_reward_type = "checklist"
+
+[verifier]
+timeout_sec = 1200.0
+
+[verifier.env]
+
+[agent]
+timeout_sec = 1200.0
+
+[environment]
+build_timeout_sec = 900.0
+os = "linux"
+cpus = 4
+memory_mb = 8192
+storage_mb = 10240
+gpus = 0
+allow_internet = true
+mcp_servers = []
+
+[environment.env]
+
+[solution]
+
+[solution.env]

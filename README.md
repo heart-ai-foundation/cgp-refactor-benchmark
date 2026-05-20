@@ -24,9 +24,22 @@ Not allowed before results:
 ## Quick Smoke Path
 
 ```bash
+python scripts/package_codescale_harbor.py --limit 3
 python scripts/generate_run_plan.py
 python scripts/prepare_run.py --run-id local-refactor-smoke-codex-baseline-r1
 python scripts/prepare_run.py --run-id local-refactor-smoke-codex-cgp-r1
+```
+
+For Harbor execution against packaged CodeScaleBench tasks:
+
+```bash
+harbor run \
+  --path tasks/harbor/codescalebench-refactor \
+  --agent nop \
+  --n-concurrent 1 \
+  --n-tasks 1 \
+  --jobs-dir runs/harbor-smoke \
+  --yes
 ```
 
 After a run directory has artifacts, score it:
@@ -50,4 +63,3 @@ python scripts/summarize.py --scores results/scores.jsonl
 - `runs/` - generated run plans and raw run artifacts
 - `results/` - score JSONL and summary CSV outputs
 - `docs/` - PRD, scoring spec, runbook, preregistration draft
-

@@ -1,0 +1,43 @@
+schema_version = "1.2"
+artifacts = []
+
+[task]
+name = "heart-cgp/ccx-migration-107"
+description = "LLVM Legacy Pass Manager to New Pass Manager Migration Inventory"
+authors = [{ name = "CodeScaleBench" }]
+keywords = ["codescalebench", "refactor", "cpp"]
+
+[metadata]
+codescalebench_task_id = "CCX-migration-107"
+origin_suite = "csb_org_migration"
+repo = "sg-evals/llvm-project--a8f3c97d"
+category = "migration-inventory"
+language = "cpp"
+difficulty = "hard"
+source_task_dir = "/home/dylan/CodeScaleBench/benchmarks/csb/refactor/ccx-migration-107"
+verification_command = "bash /tests/test.sh"
+verification_reward_type = "score"
+
+[verifier]
+timeout_sec = 900.0
+
+[verifier.env]
+
+[agent]
+timeout_sec = 900.0
+
+[environment]
+build_timeout_sec = 600.0
+os = "linux"
+cpus = 1
+memory_mb = 2048
+storage_mb = 10240
+gpus = 0
+allow_internet = true
+mcp_servers = []
+
+[environment.env]
+
+[solution]
+
+[solution.env]

@@ -6,6 +6,6 @@ __pycache__/
 *.log
 runs/raw/
 runs/worktrees/
+runs/harbor-smoke/
 results/*.csv
 results/*.jsonl
-
