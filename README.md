@@ -21,42 +21,24 @@ Not allowed before results:
 - CGP improves all coding-agent workflows.
 - CGP makes agents more capable.
 
-## Quick Smoke Path
+## One-Command Runs
 
 ```bash
-python scripts/package_codescale_harbor.py --limit 3
-python scripts/package_codescale_harbor.py \
-  --preset full \
-  --limit 60 \
-  --out-root tasks/harbor/codescalebench-60 \
-  --manifest tasks/selected_tasks.codescale-60.jsonl
-python scripts/generate_run_plan.py
-python scripts/prepare_run.py --run-id local-refactor-smoke-codex-baseline-r1
-python scripts/prepare_run.py --run-id local-refactor-smoke-codex-cgp-r1
+python scripts/run_benchmark.py --preset smoke --agents codex --n-tasks 1
 ```
 
-For the documented 60-task benchmark package:
+The documented 60-task benchmark matrix is also one command:
 
 ```bash
-harbor run \
-  --path tasks/harbor/codescalebench-60 \
-  --agent nop \
-  --n-concurrent 1 \
-  --n-tasks 1 \
-  --jobs-dir runs/harbor-smoke \
-  --yes
+python scripts/run_benchmark.py --preset full
 ```
 
-For Harbor execution against packaged CodeScaleBench tasks:
+This packages CodeScaleBench tasks, renders baseline and CGP Harbor task
+variants, writes the run plan, and runs Harbor for each agent-condition cell.
+Use `--dry-run` to print the exact Harbor commands without launching agents:
 
 ```bash
-harbor run \
-  --path tasks/harbor/codescalebench-refactor \
-  --agent nop \
-  --n-concurrent 1 \
-  --n-tasks 1 \
-  --jobs-dir runs/harbor-smoke \
-  --yes
+python scripts/run_benchmark.py --preset full --dry-run
 ```
 
 After a run directory has artifacts, score it:

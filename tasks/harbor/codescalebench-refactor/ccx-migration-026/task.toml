@@ -15,6 +15,7 @@ category = "migration-inventory"
 language = "cpp"
 difficulty = "hard"
 source_task_dir = "/home/dylan/CodeScaleBench/benchmarks/csb/refactor/ccx-migration-026"
+selection_rank = 2
 verification_command = "bash /tests/test.sh"
 verification_reward_type = "score"
 

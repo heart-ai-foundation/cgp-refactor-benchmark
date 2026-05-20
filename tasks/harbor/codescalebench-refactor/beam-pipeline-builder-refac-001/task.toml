@@ -15,6 +15,7 @@ category = "refactor"
 language = "java"
 difficulty = "hard"
 source_task_dir = "/home/dylan/CodeScaleBench/benchmarks/csb/refactor/beam-pipeline-builder-refac-001"
+selection_rank = 1
 verification_command = "bash /tests/test.sh"
 verification_reward_type = "checklist"
 

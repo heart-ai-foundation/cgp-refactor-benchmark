@@ -4,8 +4,40 @@
 
 1. Confirm the task source.
 2. Confirm installed agent CLIs.
-3. Generate a smoke run plan.
-4. Prepare one baseline and one CGP run.
+3. Run the one-command smoke path.
+4. Run the one-command full benchmark path after OSF preregistration freeze.
+
+## One-Command Execution
+
+Smoke one task per baseline/CGP condition for one agent:
+
+```bash
+python scripts/run_benchmark.py --preset smoke --agents codex --n-tasks 1
+```
+
+Prepare the full 60-task benchmark package and run plan without launching
+agents:
+
+```bash
+python scripts/run_benchmark.py --preset full --prepare-only
+```
+
+Print the full benchmark Harbor commands without launching agents:
+
+```bash
+python scripts/run_benchmark.py --preset full --dry-run
+```
+
+Run the documented full matrix:
+
+```bash
+python scripts/run_benchmark.py --preset full
+```
+
+The full default is 60 tasks x 3 agents x 2 conditions x 1 replication = 360
+runs. It renders condition-specific Harbor task directories under
+`tasks/harbor/codescalebench-60-conditions/` and writes results under
+`runs/harbor/full/{condition}/{agent}/r1/`.
 
 ## CodeScaleBench Inspection
 

@@ -7,5 +7,9 @@ __pycache__/
 runs/raw/
 runs/worktrees/
 runs/harbor-smoke/
+runs/harbor/
+runs/run_plan.codescale-smoke.csv
+runs/run_plan.codescale-smoke.metadata.json
+tasks/harbor/*-conditions/
 results/*.csv
 results/*.jsonl
