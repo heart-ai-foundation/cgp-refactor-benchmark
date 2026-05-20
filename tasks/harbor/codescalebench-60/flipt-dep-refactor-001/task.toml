@@ -1,0 +1,44 @@
+schema_version = "1.2"
+artifacts = []
+
+[task]
+name = "heart-cgp/flipt-dep-refactor-001"
+description = "Add context.Context parameter to storage.NewResource() and update all 10 call sites across 8 files \u2014 function signature propagation refactoring"
+authors = [{ name = "CodeScaleBench" }]
+keywords = ["codescalebench", "refactor", "go"]
+
+[metadata]
+codescalebench_task_id = "flipt-dep-refactor-001"
+origin_suite = ""
+repo = "flipt-io/flipt"
+category = "enterprise_dep_refactor"
+language = "go"
+difficulty = "hard"
+source_task_dir = "/home/dylan/CodeScaleBench/benchmarks/csb_sdlc_refactor/flipt-dep-refactor-001"
+selection_rank = 41
+verification_command = "bash /tests/test.sh"
+verification_reward_type = "checklist"
+
+[verifier]
+timeout_sec = 900.0
+
+[verifier.env]
+
+[agent]
+timeout_sec = 900.0
+
+[environment]
+build_timeout_sec = 900.0
+os = "linux"
+cpus = 1
+memory_mb = 2048
+storage_mb = 10240
+gpus = 0
+allow_internet = true
+mcp_servers = []
+
+[environment.env]
+
+[solution]
+
+[solution.env]

@@ -28,12 +28,33 @@ selected tasks before Harbor execution:
 
 ```bash
 python scripts/package_codescale_harbor.py --limit 3
+python scripts/package_codescale_harbor.py \
+  --preset full \
+  --limit 60 \
+  --out-root tasks/harbor/codescalebench-60 \
+  --manifest tasks/selected_tasks.codescale-60.jsonl
 ```
 
 This writes:
 
 - `tasks/harbor/codescalebench-refactor/`
 - `tasks/selected_tasks.codescale-smoke.jsonl`
+- `tasks/harbor/codescalebench-60/`
+- `tasks/selected_tasks.codescale-60.jsonl`
+
+The 60-task package follows the PRD/OSF task-source rule: CodeScaleBench
+refactor and migration tasks first, then dependency-refactor and multi-file
+codebase-change categories to reach the documented 50-60 task target. Current
+deterministic composition:
+
+- 25 `migration-inventory`
+- 13 `cross_file_refactoring`
+- 2 `refactor`
+- 2 `enterprise_dep_refactor`
+- 8 `cross_module_bug_fix`
+- 4 `bug_fix`
+- 3 `bug_investigation`
+- 3 `ccb_swebenchpro`
 
 Local Harbor execution requires real Docker Compose. On this Fedora machine,
 Harbor was installed with `uv tool install harbor`, and the working runtime is
@@ -52,8 +73,9 @@ harbor run \
   --yes
 ```
 
-The Docker smoke run on 2026-05-20 completed with `Trials=1`,
-`Exceptions=0`, and reward `0.0` for the NOP agent.
+Docker smoke runs on 2026-05-20 completed with `Trials=1`, `Exceptions=0`,
+and reward `0.0` for the NOP agent on both the 3-task smoke package and the
+60-task benchmark package.
 
 ## Failure Classes
 

@@ -1,0 +1,25 @@
+# SWE-bench Pro Task Environment
+# Repo: gravitational/teleport
+
+FROM ghcr.io/sg-evals/sweap-images:gravitational.teleport-gravitational__teleport-3ff75e29fb2153a2637fe7f83e49dc04b1c99c9f
+ENV TASK_WORKDIR=/workspace
+ENV TASK_REPO_ROOT=/workspace
+
+# Install uv for Python package management
+RUN curl -LsSf https://astral.sh/uv/0.7.13/install.sh 2>/dev/null | sh || true
+
+# Create required directories for Harbor
+RUN mkdir -p /logs && rm -rf /workspace && ln -sf /app /workspace || true
+
+# SWE-bench Pro images have the repository at /app, not /testbed
+WORKDIR /workspace
+
+# Override the default entrypoint to work with Harbor's docker-compose
+
+# Create non-root user for agent harness compatibility
+RUN (adduser --disabled-password --gecos '' claude 2>/dev/null || true) && \
+    for d in /workspace /app /testbed /logs; do [ -d "$d" ] && chown -R claude:claude "$d"; done || true
+
+# Harness-agnostic: ensure all users (root/claude) can read+write workspace files
+
+ENTRYPOINT []

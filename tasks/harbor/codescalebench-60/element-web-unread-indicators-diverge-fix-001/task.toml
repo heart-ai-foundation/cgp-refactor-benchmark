@@ -1,0 +1,44 @@
+schema_version = "1.2"
+artifacts = []
+
+[task]
+name = "heart-cgp/element-web-unread-indicators-diverge-fix-001"
+description = "'# Unread indicators diverge between room and thread timelines\n\n## Description:\nWhen navigating a room with threads, \u201cunread\u201d indicators do not always respect thread-scoped read receipts nor the ru"
+authors = [{ name = "CodeScaleBench" }]
+keywords = ["codescalebench", "refactor", "typescript"]
+
+[metadata]
+codescalebench_task_id = "element-web-unread-indicators-diverge-fix-001"
+origin_suite = ""
+repo = "element-hq/element-web"
+category = "bug_fix"
+language = "typescript"
+difficulty = "hard"
+source_task_dir = "/home/dylan/CodeScaleBench/benchmarks/csb_sdlc_fix/element-web-unread-indicators-diverge-fix-001"
+selection_rank = 52
+verification_command = "bash /tests/test.sh"
+verification_reward_type = "test_ratio"
+
+[verifier]
+timeout_sec = 900.0
+
+[verifier.env]
+
+[agent]
+timeout_sec = 900.0
+
+[environment]
+build_timeout_sec = 900.0
+os = "linux"
+cpus = 1
+memory_mb = 2048
+storage_mb = 10240
+gpus = 0
+allow_internet = true
+mcp_servers = []
+
+[environment.env]
+
+[solution]
+
+[solution.env]

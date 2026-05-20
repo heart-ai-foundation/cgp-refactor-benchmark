@@ -1,0 +1,44 @@
+schema_version = "1.2"
+artifacts = []
+
+[task]
+name = "heart-cgp/ccx-migration-203"
+description = "Django URL Patterns Migration from patterns() to list"
+authors = [{ name = "CodeScaleBench" }]
+keywords = ["codescalebench", "refactor", "python"]
+
+[metadata]
+codescalebench_task_id = "CCX-migration-203"
+origin_suite = ""
+repo = "sg-evals/django--674eda1c"
+category = "migration-inventory"
+language = "python"
+difficulty = "hard"
+source_task_dir = "/home/dylan/CodeScaleBench/benchmarks/csb_org_migration/ccx-migration-203"
+selection_rank = 13
+verification_command = "bash /tests/test.sh"
+verification_reward_type = "score"
+
+[verifier]
+timeout_sec = 900.0
+
+[verifier.env]
+
+[agent]
+timeout_sec = 900.0
+
+[environment]
+build_timeout_sec = 600.0
+os = "linux"
+cpus = 1
+memory_mb = 2048
+storage_mb = 10240
+gpus = 0
+allow_internet = true
+mcp_servers = []
+
+[environment.env]
+
+[solution]
+
+[solution.env]

@@ -1,0 +1,44 @@
+schema_version = "1.2"
+artifacts = []
+
+[task]
+name = "heart-cgp/pytorch-tracer-graph-cleanup-fix-001"
+description = "Fixes #169388\r"
+authors = [{ name = "CodeScaleBench" }]
+keywords = ["codescalebench", "refactor", "cpp"]
+
+[metadata]
+codescalebench_task_id = "pytorch-tracer-graph-cleanup-fix-001"
+origin_suite = ""
+repo = "pytorch"
+category = "cross_module_bug_fix"
+language = "cpp"
+difficulty = "hard"
+source_task_dir = "/home/dylan/CodeScaleBench/benchmarks/csb_sdlc_fix/pytorch-tracer-graph-cleanup-fix-001"
+selection_rank = 49
+verification_command = "bash /tests/test.sh"
+verification_reward_type = "diff_similarity"
+
+[verifier]
+timeout_sec = 600.0
+
+[verifier.env]
+
+[agent]
+timeout_sec = 600.0
+
+[environment]
+build_timeout_sec = 1800.0
+os = "linux"
+cpus = 1
+memory_mb = 2048
+storage_mb = 10240
+gpus = 0
+allow_internet = true
+mcp_servers = []
+
+[environment.env]
+
+[solution]
+
+[solution.env]

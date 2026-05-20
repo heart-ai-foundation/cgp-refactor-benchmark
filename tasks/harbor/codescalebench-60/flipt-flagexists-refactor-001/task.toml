@@ -1,0 +1,44 @@
+schema_version = "1.2"
+artifacts = []
+
+[task]
+name = "heart-cgp/flipt-flagexists-refactor-001"
+description = "Add FlagExists method to ReadOnlyFlagStore interface and implement in all 3 concrete types \u2014 interface method addition refactoring"
+authors = [{ name = "CodeScaleBench" }]
+keywords = ["codescalebench", "refactor", "go"]
+
+[metadata]
+codescalebench_task_id = "flipt-flagexists-refactor-001"
+origin_suite = ""
+repo = "flipt-io/flipt"
+category = "enterprise_dep_refactor"
+language = "go"
+difficulty = "hard"
+source_task_dir = "/home/dylan/CodeScaleBench/benchmarks/csb_sdlc_refactor/flipt-flagexists-refactor-001"
+selection_rank = 42
+verification_command = "bash /tests/test.sh"
+verification_reward_type = "checklist"
+
+[verifier]
+timeout_sec = 900.0
+
+[verifier.env]
+
+[agent]
+timeout_sec = 900.0
+
+[environment]
+build_timeout_sec = 900.0
+os = "linux"
+cpus = 1
+memory_mb = 2048
+storage_mb = 10240
+gpus = 0
+allow_internet = true
+mcp_servers = []
+
+[environment.env]
+
+[solution]
+
+[solution.env]

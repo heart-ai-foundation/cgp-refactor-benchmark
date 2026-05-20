@@ -1,0 +1,44 @@
+schema_version = "1.2"
+artifacts = []
+
+[task]
+name = "heart-cgp/django-select-for-update-fix-001"
+description = "Trace the root cause of select_for_update(of) crash when combined with values_list() containing annotation expressions in Django ORM"
+authors = [{ name = "CodeScaleBench" }]
+keywords = ["codescalebench", "refactor", "python"]
+
+[metadata]
+codescalebench_task_id = "django-select-for-update-fix-001"
+origin_suite = ""
+repo = "django/django"
+category = "bug_investigation"
+language = "python"
+difficulty = "hard"
+source_task_dir = "/home/dylan/CodeScaleBench/benchmarks/csb_sdlc_fix/django-select-for-update-fix-001"
+selection_rank = 55
+verification_command = "bash /tests/test.sh"
+verification_reward_type = "ir_checklist"
+
+[verifier]
+timeout_sec = 1200.0
+
+[verifier.env]
+
+[agent]
+timeout_sec = 1200.0
+
+[environment]
+build_timeout_sec = 1800.0
+os = "linux"
+cpus = 1
+memory_mb = 2048
+storage_mb = 10240
+gpus = 0
+allow_internet = true
+mcp_servers = []
+
+[environment.env]
+
+[solution]
+
+[solution.env]

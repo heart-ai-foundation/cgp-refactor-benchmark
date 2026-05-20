@@ -1,0 +1,14 @@
+{
+  "task_manifest": "tasks/selected_tasks.codescale-60.jsonl",
+  "agents": [
+    "codex",
+    "claude-code",
+    "gemini-cli"
+  ],
+  "conditions": [
+    "baseline",
+    "cgp"
+  ],
+  "replications": 1,
+  "run_count": 360
+}

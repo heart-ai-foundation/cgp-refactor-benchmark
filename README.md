@@ -25,9 +25,26 @@ Not allowed before results:
 
 ```bash
 python scripts/package_codescale_harbor.py --limit 3
+python scripts/package_codescale_harbor.py \
+  --preset full \
+  --limit 60 \
+  --out-root tasks/harbor/codescalebench-60 \
+  --manifest tasks/selected_tasks.codescale-60.jsonl
 python scripts/generate_run_plan.py
 python scripts/prepare_run.py --run-id local-refactor-smoke-codex-baseline-r1
 python scripts/prepare_run.py --run-id local-refactor-smoke-codex-cgp-r1
+```
+
+For the documented 60-task benchmark package:
+
+```bash
+harbor run \
+  --path tasks/harbor/codescalebench-60 \
+  --agent nop \
+  --n-concurrent 1 \
+  --n-tasks 1 \
+  --jobs-dir runs/harbor-smoke \
+  --yes
 ```
 
 For Harbor execution against packaged CodeScaleBench tasks:

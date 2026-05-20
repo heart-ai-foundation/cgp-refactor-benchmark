@@ -1,0 +1,44 @@
+schema_version = "1.2"
+artifacts = []
+
+[task]
+name = "heart-cgp/pytorch-relu-gelu-fusion-fix-001"
+description = "Cherry-pick revert of Inductor ReLU/GELU(Addmm) fusions (#168157)"
+authors = [{ name = "CodeScaleBench" }]
+keywords = ["codescalebench", "refactor", "cpp"]
+
+[metadata]
+codescalebench_task_id = "pytorch-relu-gelu-fusion-fix-001"
+origin_suite = ""
+repo = "pytorch"
+category = "cross_module_bug_fix"
+language = "cpp"
+difficulty = "hard"
+source_task_dir = "/home/dylan/CodeScaleBench/benchmarks/csb_sdlc_fix/pytorch-relu-gelu-fusion-fix-001"
+selection_rank = 48
+verification_command = "bash /tests/test.sh"
+verification_reward_type = "diff_similarity"
+
+[verifier]
+timeout_sec = 600.0
+
+[verifier.env]
+
+[agent]
+timeout_sec = 600.0
+
+[environment]
+build_timeout_sec = 1800.0
+os = "linux"
+cpus = 1
+memory_mb = 2048
+storage_mb = 10240
+gpus = 0
+allow_internet = true
+mcp_servers = []
+
+[environment.env]
+
+[solution]
+
+[solution.env]

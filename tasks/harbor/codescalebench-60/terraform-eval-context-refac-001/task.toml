@@ -1,0 +1,44 @@
+schema_version = "1.2"
+artifacts = []
+
+[task]
+name = "heart-cgp/terraform-eval-context-refac-001"
+description = "Rename NodeAbstractResourceInstance to NodeResourceInstanceBase in Terraform"
+authors = [{ name = "CodeScaleBench" }]
+keywords = ["codescalebench", "refactor", "go"]
+
+[metadata]
+codescalebench_task_id = "terraform-eval-context-refac-001"
+origin_suite = ""
+repo = "hashicorp/terraform"
+category = "cross_file_refactoring"
+language = "go"
+difficulty = "hard"
+source_task_dir = "/home/dylan/CodeScaleBench/benchmarks/csb_sdlc_refactor/terraform-eval-context-refac-001"
+selection_rank = 38
+verification_command = "bash /tests/test.sh"
+verification_reward_type = "checklist"
+
+[verifier]
+timeout_sec = 1200.0
+
+[verifier.env]
+
+[agent]
+timeout_sec = 1200.0
+
+[environment]
+build_timeout_sec = 900.0
+os = "linux"
+cpus = 4
+memory_mb = 8192
+storage_mb = 10240
+gpus = 0
+allow_internet = true
+mcp_servers = []
+
+[environment.env]
+
+[solution]
+
+[solution.env]

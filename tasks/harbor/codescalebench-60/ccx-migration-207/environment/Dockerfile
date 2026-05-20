@@ -1,0 +1,37 @@
+FROM ubuntu:22.04
+
+ENV DEBIAN_FRONTEND=noninteractive
+
+# Base tools
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    git \
+    ca-certificates \
+    curl \
+    python3 \
+    cargo \
+    && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /workspace
+
+# Clone local checkout repos (baseline config: agent has local access to these)
+RUN git clone --depth 1 https://github.com/sg-evals/rust--01f6ddf7 /workspace/rust--01f6ddf7 || \
+    (mkdir -p /workspace/rust--01f6ddf7 && cd /workspace/rust--01f6ddf7 && git init && git config user.email "agent@example.com" && git config user.name "Agent")
+RUN git clone --depth 1 https://github.com/sg-evals/servo--be6a2f99 /workspace/servo--be6a2f99 || \
+    (mkdir -p /workspace/servo--be6a2f99 && cd /workspace/servo--be6a2f99 && git init && git config user.email "agent@example.com" && git config user.name "Agent")
+
+# Initialize git identity for agent commits
+RUN git config --global user.email "agent@example.com" && \
+    git config --global user.name "Agent" && \
+    git config --global safe.directory '*'
+
+# Create log directories
+RUN mkdir -p /logs/agent /logs/verifier
+
+# Pre-create claude user and set ownership at build time so Harbor's
+# runtime chown is a no-op (avoids 15-30 min delay on large repos).
+RUN (adduser --disabled-password --gecos '' claude 2>/dev/null || true) && \
+    for d in /workspace /app /testbed /logs; do [ -d "$d" ] && chown -R claude:claude "$d"; done || true
+
+# Harness-agnostic: ensure all users (root/claude) can read+write workspace files
+
+ENTRYPOINT []

@@ -1,0 +1,44 @@
+schema_version = "1.2"
+artifacts = []
+
+[task]
+name = "heart-cgp/envoy-listener-manager-refac-001"
+description = "Rename ListenerManagerImpl to ListenerOrchestrator in Envoy"
+authors = [{ name = "CodeScaleBench" }]
+keywords = ["codescalebench", "refactor", "cpp"]
+
+[metadata]
+codescalebench_task_id = "envoy-listener-manager-refac-001"
+origin_suite = ""
+repo = "envoyproxy/envoy"
+category = "cross_file_refactoring"
+language = "cpp"
+difficulty = "expert"
+source_task_dir = "/home/dylan/CodeScaleBench/benchmarks/csb_sdlc_refactor/envoy-listener-manager-refac-001"
+selection_rank = 28
+verification_command = "bash /tests/test.sh"
+verification_reward_type = "checklist"
+
+[verifier]
+timeout_sec = 1800.0
+
+[verifier.env]
+
+[agent]
+timeout_sec = 1800.0
+
+[environment]
+build_timeout_sec = 1200.0
+os = "linux"
+cpus = 4
+memory_mb = 8192
+storage_mb = 10240
+gpus = 0
+allow_internet = true
+mcp_servers = []
+
+[environment.env]
+
+[solution]
+
+[solution.env]
