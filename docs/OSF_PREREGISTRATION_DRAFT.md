@@ -2,7 +2,7 @@
 
 Study title: Continuity-Governed Prompting on Public Refactor and Migration Benchmark Tasks.
 
-Repository checkpoint for preregistration: commit `066f440` or later preregistration-final commit that only updates documentation.
+Repository checkpoint for preregistration: tag `prereg-v0.1`, applied to the commit that contains this draft and the OSF submission checklist.
 
 ## Research Question
 
