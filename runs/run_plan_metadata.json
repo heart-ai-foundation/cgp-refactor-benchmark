@@ -1,0 +1,12 @@
+{
+  "task_manifest": "tasks/selected_tasks.example.jsonl",
+  "agents": [
+    "codex"
+  ],
+  "conditions": [
+    "baseline",
+    "cgp"
+  ],
+  "replications": 1,
+  "run_count": 2
+}

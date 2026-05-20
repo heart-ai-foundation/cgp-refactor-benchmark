@@ -1,0 +1,2 @@
+# One JSON object per excluded task.
+# Required fields: task_id, task_source, reason, inspected_at.

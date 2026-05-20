@@ -1,0 +1,11 @@
+__pycache__/
+.pytest_cache/
+.ruff_cache/
+.venv/
+*.pyc
+*.log
+runs/raw/
+runs/worktrees/
+results/*.csv
+results/*.jsonl
+
