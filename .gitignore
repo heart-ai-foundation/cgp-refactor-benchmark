@@ -7,6 +7,7 @@ __pycache__/
 runs/raw/
 runs/worktrees/
 runs/harbor-smoke/
+runs/harbor-oauth-smoke/
 runs/harbor/
 runs/run_plan.codescale-smoke.csv
 runs/run_plan.codescale-smoke.metadata.json

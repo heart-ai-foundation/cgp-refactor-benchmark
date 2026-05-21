@@ -44,6 +44,18 @@ export ANTHROPIC_API_KEY="..."                       # or CLAUDE_CODE_OAUTH_TOKE
 export GEMINI_API_KEY="..."                          # or Google Vertex/GCA auth
 ```
 
+For local OAuth CLI logins, the runner automatically bridges:
+
+- `~/.codex/auth.json`
+- `~/.claude/.credentials.json`
+- `~/.gemini/oauth_creds.json`
+
+Check credential visibility without launching Harbor:
+
+```bash
+python scripts/run_benchmark.py --preset full --auth-check-only
+```
+
 The runner prints per-trial progress while Harbor is active:
 
 ```text

@@ -25,16 +25,22 @@ DEFAULT_AGENT_MODELS = {
     "claude-code": "anthropic/claude-sonnet-4-5-20250929",
     "gemini-cli": "google/gemini-2.5-pro",
 }
+DEFAULT_AGENT_IMPORT_PATHS = {
+    "claude-code": "harbor_oauth_agents:ClaudeCodeOAuth",
+    "gemini-cli": "harbor_oauth_agents:GeminiCliOAuth",
+}
 
 AUTH_ENV_BY_AGENT = {
     "codex": ["CODEX_AUTH_JSON_PATH", "CODEX_FORCE_AUTH_JSON", "OPENAI_API_KEY"],
     "claude-code": [
+        "CLAUDE_CODE_CREDENTIALS_PATH",
         "ANTHROPIC_API_KEY",
         "ANTHROPIC_AUTH_TOKEN",
         "CLAUDE_CODE_OAUTH_TOKEN",
         "AWS_BEARER_TOKEN_BEDROCK",
     ],
     "gemini-cli": [
+        "GEMINI_OAUTH_CREDS_PATH",
         "GEMINI_API_KEY",
         "GOOGLE_API_KEY",
         "GOOGLE_APPLICATION_CREDENTIALS",
@@ -164,11 +170,31 @@ def configure_codex_auth_from_host() -> None:
         print(f"Using Codex auth from {auth_path}", flush=True)
 
 
+def configure_oauth_file_env(agent: str, env_name: str, default_path: Path) -> None:
+    if _has_nonempty_env(env_name):
+        return
+    if default_path.exists():
+        os.environ[env_name] = str(default_path)
+        print(f"Using {agent} OAuth credentials from {default_path}", flush=True)
+
+
 def validate_agent_auth(args: argparse.Namespace) -> None:
     if args.dry_run or args.prepare_only or args.skip_auth_check:
         return
     if "codex" in args.agents:
         configure_codex_auth_from_host()
+    if "claude-code" in args.agents:
+        configure_oauth_file_env(
+            "Claude Code",
+            "CLAUDE_CODE_CREDENTIALS_PATH",
+            Path.home() / ".claude" / ".credentials.json",
+        )
+    if "gemini-cli" in args.agents:
+        configure_oauth_file_env(
+            "Gemini CLI",
+            "GEMINI_OAUTH_CREDS_PATH",
+            Path.home() / ".gemini" / "oauth_creds.json",
+        )
     missing = []
     for agent in args.agents:
         env_names = AUTH_ENV_BY_AGENT.get(agent)
@@ -291,8 +317,6 @@ def harbor_runs(args: argparse.Namespace, condition_roots: dict[str, str]) -> No
                     "run",
                     "--path",
                     condition_roots[condition],
-                    "--agent",
-                    agent,
                     "--model",
                     args.agent_models[agent],
                     "--n-concurrent",
@@ -303,6 +327,11 @@ def harbor_runs(args: argparse.Namespace, condition_roots: dict[str, str]) -> No
                     job_name,
                     "--yes",
                 ]
+                import_path = DEFAULT_AGENT_IMPORT_PATHS.get(agent)
+                if import_path:
+                    command.extend(["--agent-import-path", import_path])
+                else:
+                    command.extend(["--agent", agent])
                 if args.n_tasks is not None:
                     command.extend(["--n-tasks", str(args.n_tasks)])
                 run_command(
@@ -361,6 +390,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--jobs-dir", type=Path, default=Path("runs/harbor"))
     parser.add_argument("--prompt-dir", type=Path, default=Path("prompts"))
     parser.add_argument("--prepare-only", action="store_true")
+    parser.add_argument("--auth-check-only", action="store_true")
     parser.add_argument("--skip-package", action="store_true")
     parser.add_argument("--skip-auth-check", action="store_true")
     parser.add_argument("--dry-run", action="store_true")
@@ -391,6 +421,9 @@ def parse_args() -> argparse.Namespace:
 def main() -> int:
     args = parse_args()
     validate_agent_auth(args)
+    if args.auth_check_only:
+        print("auth_check=ok")
+        return 0
     if not args.skip_package:
         package_tasks(args)
     condition_roots = write_condition_tasks(args)
