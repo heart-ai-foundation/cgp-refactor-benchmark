@@ -299,6 +299,7 @@ def write_plan(args: argparse.Namespace, condition_roots: dict[str, str]) -> Non
                     "task_start": args.task_start,
                     "task_count": args.task_count,
                     "batch_name": args.batch_name,
+                    "confirm_each_task": args.confirm_each_task,
                     "run_count": len(rows),
                 },
                 indent=2,
@@ -313,46 +314,148 @@ def harbor_runs(args: argparse.Namespace, condition_roots: dict[str, str]) -> No
     if args.prepare_only:
         return
     ensure_docker(args.dry_run)
+    if args.confirm_each_task:
+        harbor_runs_with_confirmation(args, condition_roots)
+        return
 
     for replication in range(1, args.replications + 1):
         for condition in args.conditions:
             for agent in args.agents:
-                jobs_root = args.jobs_dir / args.preset
-                if args.batch_name:
-                    jobs_root = jobs_root / args.batch_name
-                jobs_dir = jobs_root / condition / agent / f"r{replication}"
-                job_name = f"{args.preset}-{condition}-{agent}-r{replication}"
-                if args.batch_name:
-                    job_name = f"{job_name}-{args.batch_name}"
-                job_dir = jobs_dir / job_name
-                command = [
-                    "harbor",
-                    "run",
-                    "--path",
+                command, job_dir = build_harbor_command(
+                    args,
                     condition_roots[condition],
-                    "--model",
-                    args.agent_models[agent],
-                    "--n-concurrent",
-                    str(args.n_concurrent),
-                    "--jobs-dir",
-                    str(jobs_dir),
-                    "--job-name",
-                    job_name,
-                    "--yes",
-                ]
-                import_path = DEFAULT_AGENT_IMPORT_PATHS.get(agent)
-                if import_path:
-                    command.extend(["--agent-import-path", import_path])
-                else:
-                    command.extend(["--agent", agent])
-                if args.n_tasks is not None:
-                    command.extend(["--n-tasks", str(args.n_tasks)])
+                    condition,
+                    agent,
+                    replication,
+                )
                 run_command(
                     command,
                     args.dry_run,
                     monitor_job_dir=job_dir,
                     monitor_label=f"{condition}/{agent}/r{replication}",
                 )
+
+
+def harbor_runs_with_confirmation(
+    args: argparse.Namespace,
+    condition_roots: dict[str, str],
+) -> None:
+    tasks = selected_tasks(args)
+    for task in tasks:
+        for replication in range(1, args.replications + 1):
+            for condition in args.conditions:
+                task_root = prepare_single_task_root(
+                    args,
+                    Path(condition_roots[condition]),
+                    condition,
+                    task.task_id,
+                )
+                for agent in args.agents:
+                    command, job_dir = build_harbor_command(
+                        args,
+                        str(task_root),
+                        condition,
+                        agent,
+                        replication,
+                        task_id=task.task_id,
+                    )
+                    try:
+                        run_command(
+                            command,
+                            args.dry_run,
+                            monitor_job_dir=job_dir,
+                            monitor_label=(
+                                f"{condition}/{agent}/r{replication}/{task.task_id}"
+                            ),
+                        )
+                    except subprocess.CalledProcessError as exc:
+                        print(
+                            f"[{condition}/{agent}/r{replication}/{task.task_id}] "
+                            f"HARBOR COMMAND ERROR exit={exc.returncode}",
+                            flush=True,
+                        )
+                        if not confirm_continue(args):
+                            return
+                        continue
+                    if not confirm_continue(args):
+                        return
+
+
+def prepare_single_task_root(
+    args: argparse.Namespace,
+    condition_root: Path,
+    condition: str,
+    task_id: str,
+) -> Path:
+    single_root = args.condition_root / "per-task" / condition / task_id
+    if args.dry_run:
+        print(f"DRY RUN: render one-task Harbor root {single_root}")
+        return single_root
+
+    source_dir = condition_root / task_id
+    if not source_dir.exists():
+        raise SystemExit(f"missing rendered task dir: {source_dir}")
+    if single_root.exists():
+        shutil.rmtree(single_root)
+    single_root.mkdir(parents=True, exist_ok=True)
+    shutil.copytree(source_dir, single_root / task_id)
+    return single_root
+
+
+def build_harbor_command(
+    args: argparse.Namespace,
+    path: str,
+    condition: str,
+    agent: str,
+    replication: int,
+    task_id: str | None = None,
+) -> tuple[list[str], Path]:
+    jobs_root = args.jobs_dir / args.preset
+    if args.batch_name:
+        jobs_root = jobs_root / args.batch_name
+    if task_id:
+        jobs_root = jobs_root / "per-task" / task_id
+    jobs_dir = jobs_root / condition / agent / f"r{replication}"
+
+    job_name_parts = [args.preset, condition, agent, f"r{replication}"]
+    if args.batch_name:
+        job_name_parts.append(args.batch_name)
+    if task_id:
+        job_name_parts.append(task_id)
+    job_name = "-".join(job_name_parts)
+    job_dir = jobs_dir / job_name
+
+    command = [
+        "harbor",
+        "run",
+        "--path",
+        path,
+        "--model",
+        args.agent_models[agent],
+        "--n-concurrent",
+        str(args.n_concurrent),
+        "--jobs-dir",
+        str(jobs_dir),
+        "--job-name",
+        job_name,
+        "--yes",
+    ]
+    import_path = DEFAULT_AGENT_IMPORT_PATHS.get(agent)
+    if import_path:
+        command.extend(["--agent-import-path", import_path])
+    else:
+        command.extend(["--agent", agent])
+    if args.n_tasks is not None:
+        command.extend(["--n-tasks", str(args.n_tasks)])
+    return command, job_dir
+
+
+def confirm_continue(args: argparse.Namespace) -> bool:
+    if args.dry_run:
+        print("DRY RUN: prompt Continue to next task? [y/N]")
+        return True
+    answer = input("Continue to next task? [y/N] ").strip().lower()
+    return answer in {"y", "yes"}
 
 
 def selected_tasks(args: argparse.Namespace):
@@ -425,6 +528,11 @@ def parse_args() -> argparse.Namespace:
         default=None,
         help="Optional label for sliced task runs; defaults to tasks-START-END.",
     )
+    parser.add_argument(
+        "--confirm-each-task",
+        action="store_true",
+        help="Run one Harbor task at a time and ask before continuing.",
+    )
     parser.add_argument("--jobs-dir", type=Path, default=Path("runs/harbor"))
     parser.add_argument("--prompt-dir", type=Path, default=Path("prompts"))
     parser.add_argument("--prepare-only", action="store_true")
@@ -447,6 +555,10 @@ def parse_args() -> argparse.Namespace:
             + ", ".join(missing_models)
             + ". Add overrides like --agent-model agent=model."
         )
+    if args.confirm_each_task and args.n_concurrent != 1:
+        raise SystemExit("--confirm-each-task requires --n-concurrent 1")
+    if args.confirm_each_task and args.n_tasks is not None:
+        raise SystemExit("--confirm-each-task cannot be combined with --n-tasks")
 
     defaults = default_paths(args.preset)
     args.limit = args.limit if args.limit is not None else (3 if args.preset == "smoke" else 60)

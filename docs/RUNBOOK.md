@@ -50,6 +50,23 @@ outputs are separated automatically, for example:
 - `runs/run_plan.codescale-60.tasks-001-010.csv`
 - `runs/harbor/full/tasks-001-010/{condition}/{agent}/r1/`
 
+During infrastructure validation, run one task at a time and pause after each
+trial:
+
+```bash
+python scripts/run_benchmark.py --preset full \
+  --task-start 1 \
+  --task-count 10 \
+  --agents codex \
+  --conditions baseline \
+  --confirm-each-task
+```
+
+This mode creates one-task Harbor roots and one-task result folders under
+`runs/harbor/full/{batch}/per-task/{task_id}/...`. After each completed or
+errored Harbor job, the runner asks whether to continue. Use this for audit and
+debugging; use non-interactive batch commands for unattended benchmark runs.
+
 Before launching agent-backed runs, the runner checks that credentials are
 visible to Harbor. It will auto-use `~/.codex/auth.json` for Codex when present;
 otherwise export one of the supported auth variables before running:
