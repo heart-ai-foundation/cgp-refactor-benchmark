@@ -18,6 +18,11 @@ from cgp_refactor_benchmark.tasks import generate_run_plan, load_tasks, write_ru
 
 DEFAULT_AGENTS = ["codex", "claude-code", "gemini-cli"]
 DEFAULT_CONDITIONS = ["baseline", "cgp"]
+DEFAULT_AGENT_MODELS = {
+    "codex": "openai/gpt-5-codex",
+    "claude-code": "anthropic/claude-sonnet-4-5-20250929",
+    "gemini-cli": "google/gemini-2.5-pro",
+}
 
 
 def run_command(command: list[str], dry_run: bool) -> None:
@@ -27,6 +32,24 @@ def run_command(command: list[str], dry_run: bool) -> None:
         return
     print(f"RUN: {printable}", flush=True)
     subprocess.run(command, check=True)
+
+
+def parse_agent_models(values: list[str]) -> dict[str, str]:
+    models = dict(DEFAULT_AGENT_MODELS)
+    for value in values:
+        if "=" not in value:
+            raise SystemExit(
+                f"invalid --agent-model {value!r}; expected format agent=model"
+            )
+        agent, model = value.split("=", 1)
+        agent = agent.strip()
+        model = model.strip()
+        if not agent or not model:
+            raise SystemExit(
+                f"invalid --agent-model {value!r}; expected format agent=model"
+            )
+        models[agent] = model
+    return models
 
 
 def ensure_docker(dry_run: bool) -> None:
@@ -136,6 +159,8 @@ def harbor_runs(args: argparse.Namespace, condition_roots: dict[str, str]) -> No
                     condition_roots[condition],
                     "--agent",
                     agent,
+                    "--model",
+                    args.agent_models[agent],
                     "--n-concurrent",
                     str(args.n_concurrent),
                     "--jobs-dir",
@@ -173,8 +198,23 @@ def parse_args() -> argparse.Namespace:
     )
     parser.add_argument("--preset", choices=["smoke", "full"], default="full")
     parser.add_argument("--limit", type=int, default=None)
-    parser.add_argument("--codescale-root", type=Path, default=Path("/home/dylan/CodeScaleBench"))
+    parser.add_argument(
+        "--codescale-root", type=Path, default=Path("/home/dylan/CodeScaleBench")
+    )
     parser.add_argument("--agents", nargs="+", default=DEFAULT_AGENTS)
+    parser.add_argument(
+        "--agent-model",
+        action="append",
+        default=[],
+        metavar="AGENT=MODEL",
+        help=(
+            "Override the Harbor model for an agent. Repeatable. "
+            "Defaults: "
+            + ", ".join(
+                f"{agent}={model}" for agent, model in DEFAULT_AGENT_MODELS.items()
+            )
+        ),
+    )
     parser.add_argument("--conditions", nargs="+", default=DEFAULT_CONDITIONS)
     parser.add_argument("--replications", type=int, default=1)
     parser.add_argument("--n-concurrent", type=int, default=1)
@@ -190,6 +230,15 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--run-plan", type=Path)
     parser.add_argument("--run-plan-metadata", type=Path)
     args = parser.parse_args()
+    args.agent_models = parse_agent_models(args.agent_model)
+
+    missing_models = [agent for agent in args.agents if agent not in args.agent_models]
+    if missing_models:
+        raise SystemExit(
+            "missing Harbor model for agent(s): "
+            + ", ".join(missing_models)
+            + ". Add overrides like --agent-model agent=model."
+        )
 
     defaults = default_paths(args.preset)
     args.limit = args.limit if args.limit is not None else (3 if args.preset == "smoke" else 60)

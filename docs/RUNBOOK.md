@@ -34,6 +34,21 @@ Run the documented full matrix:
 python scripts/run_benchmark.py --preset full
 ```
 
+The one-command runner passes explicit Harbor models for each default agent:
+
+- `codex=openai/gpt-5-codex`
+- `claude-code=anthropic/claude-sonnet-4-5-20250929`
+- `gemini-cli=google/gemini-2.5-pro`
+
+Override a model without editing code by repeating `--agent-model`:
+
+```bash
+python scripts/run_benchmark.py --preset full \
+  --agent-model codex=openai/gpt-5-codex \
+  --agent-model claude-code=anthropic/claude-sonnet-4-5-20250929 \
+  --agent-model gemini-cli=google/gemini-2.5-pro
+```
+
 The full default is 60 tasks x 3 agents x 2 conditions x 1 replication = 360
 runs. It renders condition-specific Harbor task directories under
 `tasks/harbor/codescalebench-60-conditions/` and writes results under
