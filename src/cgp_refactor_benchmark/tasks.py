@@ -43,6 +43,25 @@ def load_tasks(path: Path) -> list[BenchmarkTask]:
     return tasks
 
 
+def select_task_window(
+    tasks: list[BenchmarkTask],
+    task_start: int = 1,
+    task_count: int | None = None,
+) -> list[BenchmarkTask]:
+    """Return a deterministic 1-based task window from a manifest."""
+    if task_start < 1:
+        raise ValueError("task_start must be >= 1")
+    if task_count is not None and task_count < 1:
+        raise ValueError("task_count must be >= 1")
+    start_index = task_start - 1
+    if start_index >= len(tasks):
+        raise ValueError(
+            f"task_start {task_start} is beyond manifest size {len(tasks)}"
+        )
+    end_index = None if task_count is None else start_index + task_count
+    return tasks[start_index:end_index]
+
+
 def generate_run_plan(
     tasks: list[BenchmarkTask],
     agents: list[str],
@@ -79,4 +98,3 @@ def write_run_plan(path: Path, rows: list[dict[str, str | int]]) -> None:
         writer = csv.DictWriter(handle, fieldnames=RUN_PLAN_FIELDS)
         writer.writeheader()
         writer.writerows(rows)
-

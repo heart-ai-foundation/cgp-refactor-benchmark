@@ -2,7 +2,7 @@ from pathlib import Path
 
 from cgp_refactor_benchmark.prompts import render_prompt
 from cgp_refactor_benchmark.scorers.run_score import score_run
-from cgp_refactor_benchmark.tasks import generate_run_plan, load_tasks
+from cgp_refactor_benchmark.tasks import generate_run_plan, load_tasks, select_task_window
 
 
 def test_example_task_manifest_loads():
@@ -18,6 +18,15 @@ def test_run_plan_covers_baseline_and_cgp():
     assert [row["condition"] for row in rows] == ["baseline", "cgp"]
     assert rows[0]["run_id"] == "local-refactor-smoke-codex-baseline-r1"
     assert rows[1]["run_id"] == "local-refactor-smoke-codex-cgp-r1"
+
+
+def test_task_window_uses_one_based_manifest_positions():
+    tasks = load_tasks(Path("tasks/selected_tasks.codescale-smoke.jsonl"))
+    selected = select_task_window(tasks, task_start=2, task_count=2)
+    assert [task.task_id for task in selected] == [
+        "ccx-migration-026",
+        "ccx-migration-107",
+    ]
 
 
 def test_cgp_prompt_includes_governance_sections():

@@ -15,7 +15,12 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
 from cgp_refactor_benchmark.prompts import render_prompt
-from cgp_refactor_benchmark.tasks import generate_run_plan, load_tasks, write_run_plan
+from cgp_refactor_benchmark.tasks import (
+    generate_run_plan,
+    load_tasks,
+    select_task_window,
+    write_run_plan,
+)
 
 
 DEFAULT_AGENTS = ["codex", "claude-code", "gemini-cli"]
@@ -241,7 +246,7 @@ def package_tasks(args: argparse.Namespace) -> None:
 
 
 def write_condition_tasks(args: argparse.Namespace) -> dict[str, str]:
-    tasks = load_tasks(args.manifest)
+    tasks = selected_tasks(args)
     condition_roots: dict[str, str] = {}
     for condition in args.conditions:
         template_path = args.prompt_dir / f"{condition}.md"
@@ -270,7 +275,7 @@ def write_condition_tasks(args: argparse.Namespace) -> dict[str, str]:
 
 
 def write_plan(args: argparse.Namespace, condition_roots: dict[str, str]) -> None:
-    tasks = load_tasks(args.manifest)
+    tasks = selected_tasks(args)
     rows = generate_run_plan(
         tasks,
         args.agents,
@@ -291,6 +296,9 @@ def write_plan(args: argparse.Namespace, condition_roots: dict[str, str]) -> Non
                     "agents": args.agents,
                     "conditions": args.conditions,
                     "replications": args.replications,
+                    "task_start": args.task_start,
+                    "task_count": args.task_count,
+                    "batch_name": args.batch_name,
                     "run_count": len(rows),
                 },
                 indent=2,
@@ -309,8 +317,13 @@ def harbor_runs(args: argparse.Namespace, condition_roots: dict[str, str]) -> No
     for replication in range(1, args.replications + 1):
         for condition in args.conditions:
             for agent in args.agents:
-                jobs_dir = args.jobs_dir / args.preset / condition / agent / f"r{replication}"
+                jobs_root = args.jobs_dir / args.preset
+                if args.batch_name:
+                    jobs_root = jobs_root / args.batch_name
+                jobs_dir = jobs_root / condition / agent / f"r{replication}"
                 job_name = f"{args.preset}-{condition}-{agent}-r{replication}"
+                if args.batch_name:
+                    job_name = f"{job_name}-{args.batch_name}"
                 job_dir = jobs_dir / job_name
                 command = [
                     "harbor",
@@ -340,6 +353,14 @@ def harbor_runs(args: argparse.Namespace, condition_roots: dict[str, str]) -> No
                     monitor_job_dir=job_dir,
                     monitor_label=f"{condition}/{agent}/r{replication}",
                 )
+
+
+def selected_tasks(args: argparse.Namespace):
+    return select_task_window(
+        load_tasks(args.manifest),
+        task_start=args.task_start,
+        task_count=args.task_count,
+    )
 
 
 def default_paths(preset: str) -> dict[str, Path]:
@@ -387,6 +408,23 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--replications", type=int, default=1)
     parser.add_argument("--n-concurrent", type=int, default=1)
     parser.add_argument("--n-tasks", type=int, default=None)
+    parser.add_argument(
+        "--task-start",
+        type=int,
+        default=1,
+        help="1-based manifest position for the first task to render and run.",
+    )
+    parser.add_argument(
+        "--task-count",
+        type=int,
+        default=None,
+        help="Number of manifest tasks to render and run from --task-start.",
+    )
+    parser.add_argument(
+        "--batch-name",
+        default=None,
+        help="Optional label for sliced task runs; defaults to tasks-START-END.",
+    )
     parser.add_argument("--jobs-dir", type=Path, default=Path("runs/harbor"))
     parser.add_argument("--prompt-dir", type=Path, default=Path("prompts"))
     parser.add_argument("--prepare-only", action="store_true")
@@ -415,7 +453,28 @@ def parse_args() -> argparse.Namespace:
     for key, value in defaults.items():
         if getattr(args, key) is None:
             setattr(args, key, value)
+    configure_batch_paths(args)
     return args
+
+
+def configure_batch_paths(args: argparse.Namespace) -> None:
+    if args.task_start < 1:
+        raise SystemExit("--task-start must be >= 1")
+    if args.task_count is not None and args.task_count < 1:
+        raise SystemExit("--task-count must be >= 1")
+    if args.task_start == 1 and args.task_count is None:
+        return
+
+    end = args.limit if args.task_count is None else args.task_start + args.task_count - 1
+    if end > args.limit:
+        end = args.limit
+    if args.batch_name is None:
+        args.batch_name = f"tasks-{args.task_start:03d}-{end:03d}"
+    args.condition_root = args.condition_root / args.batch_name
+    args.run_plan = args.run_plan.with_name(
+        f"{args.run_plan.stem}.{args.batch_name}{args.run_plan.suffix}"
+    )
+    args.run_plan_metadata = args.run_plan.with_suffix(".metadata.json")
 
 
 def main() -> int:

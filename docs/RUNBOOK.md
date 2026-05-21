@@ -34,6 +34,22 @@ Run the documented full matrix:
 python scripts/run_benchmark.py --preset full
 ```
 
+Run a smaller deterministic batch from the same 60-task manifest:
+
+```bash
+python scripts/run_benchmark.py --preset full --task-start 1 --task-count 10
+python scripts/run_benchmark.py --preset full --task-start 11 --task-count 10
+```
+
+Task batch positions are 1-based positions in
+`tasks/selected_tasks.codescale-60.jsonl`. A batch run still packages the frozen
+60-task task set, then renders and executes only the selected window. Batch
+outputs are separated automatically, for example:
+
+- `tasks/harbor/codescalebench-60-conditions/tasks-001-010/`
+- `runs/run_plan.codescale-60.tasks-001-010.csv`
+- `runs/harbor/full/tasks-001-010/{condition}/{agent}/r1/`
+
 Before launching agent-backed runs, the runner checks that credentials are
 visible to Harbor. It will auto-use `~/.codex/auth.json` for Codex when present;
 otherwise export one of the supported auth variables before running:
