@@ -6,7 +6,12 @@ This repository is intentionally separate from the completed CGP Reliability and
 
 ## Status
 
-Active scaffold. Do not treat any benchmark effect as established until the run plan, task source, scorers, and results are frozen and reported.
+Preregistered benchmark. The public OSF registration is available at
+https://osf.io/9dhkp/.
+
+The preregistration freeze is tag `prereg-v0.1` at commit
+`e65809a56959ca15d1e87bde5a017364fc55a13a`. Do not treat any benchmark
+effect as established until confirmatory runs are completed and reported.
 
 ## Claims Boundary
 
