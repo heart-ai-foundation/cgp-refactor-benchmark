@@ -21,7 +21,7 @@ from cgp_refactor_benchmark.tasks import generate_run_plan, load_tasks, write_ru
 DEFAULT_AGENTS = ["codex", "claude-code", "gemini-cli"]
 DEFAULT_CONDITIONS = ["baseline", "cgp"]
 DEFAULT_AGENT_MODELS = {
-    "codex": "openai/gpt-5-codex",
+    "codex": "openai/gpt-5.5",
     "claude-code": "anthropic/claude-sonnet-4-5-20250929",
     "gemini-cli": "google/gemini-2.5-pro",
 }

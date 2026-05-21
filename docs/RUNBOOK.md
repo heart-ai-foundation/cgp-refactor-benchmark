@@ -68,7 +68,7 @@ on a fixed chatty timer.
 
 The one-command runner passes explicit Harbor models for each default agent:
 
-- `codex=openai/gpt-5-codex`
+- `codex=openai/gpt-5.5`
 - `claude-code=anthropic/claude-sonnet-4-5-20250929`
 - `gemini-cli=google/gemini-2.5-pro`
 
@@ -76,7 +76,7 @@ Override a model without editing code by repeating `--agent-model`:
 
 ```bash
 python scripts/run_benchmark.py --preset full \
-  --agent-model codex=openai/gpt-5-codex \
+  --agent-model codex=openai/gpt-5.5 \
   --agent-model claude-code=anthropic/claude-sonnet-4-5-20250929 \
   --agent-model gemini-cli=google/gemini-2.5-pro
 ```
