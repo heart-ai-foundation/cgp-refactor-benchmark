@@ -105,6 +105,15 @@ The one-command runner passes explicit Harbor models for each default agent:
 - `claude-code=anthropic/claude-sonnet-4-5-20250929`
 - `gemini-cli=google/gemini-2.5-pro`
 
+Gemini can also be run through OpenRouter as a separate agent label when the
+Gemini CLI quota is exhausted:
+
+- `gemini-openrouter=openrouter/google/gemini-2.5-pro`
+
+This uses Harbor's `opencode` agent under the hood, so analyze it separately
+from the preregistered `gemini-cli` condition unless it is explicitly recorded
+as a deviation or exploratory continuation.
+
 Override a model without editing code by repeating `--agent-model`:
 
 ```bash
@@ -112,6 +121,18 @@ python scripts/run_benchmark.py --preset full \
   --agent-model codex=openai/gpt-5.5 \
   --agent-model claude-code=anthropic/claude-sonnet-4-5-20250929 \
   --agent-model gemini-cli=google/gemini-2.5-pro
+```
+
+OpenRouter Gemini example:
+
+```bash
+export OPENROUTER_API_KEY="..."
+python scripts/run_benchmark.py --preset full \
+  --task-start 11 \
+  --task-count 10 \
+  --agents gemini-openrouter \
+  --conditions baseline \
+  --confirm-each-task
 ```
 
 The full default is 60 tasks x 3 agents x 2 conditions x 1 replication = 360

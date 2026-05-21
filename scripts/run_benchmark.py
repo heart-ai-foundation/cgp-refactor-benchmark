@@ -29,10 +29,14 @@ DEFAULT_AGENT_MODELS = {
     "codex": "openai/gpt-5.5",
     "claude-code": "anthropic/claude-sonnet-4-5-20250929",
     "gemini-cli": "google/gemini-2.5-pro",
+    "gemini-openrouter": "openrouter/google/gemini-2.5-pro",
 }
 DEFAULT_AGENT_IMPORT_PATHS = {
     "claude-code": "harbor_oauth_agents:ClaudeCodeOAuth",
     "gemini-cli": "harbor_oauth_agents:GeminiCliOAuth",
+}
+HARBOR_AGENT_BY_LABEL = {
+    "gemini-openrouter": "opencode",
 }
 
 AUTH_ENV_BY_AGENT = {
@@ -52,6 +56,7 @@ AUTH_ENV_BY_AGENT = {
         "GOOGLE_GENAI_USE_VERTEXAI",
         "GOOGLE_GENAI_USE_GCA",
     ],
+    "gemini-openrouter": ["OPENROUTER_API_KEY"],
 }
 
 
@@ -440,11 +445,12 @@ def build_harbor_command(
         job_name,
         "--yes",
     ]
+    harbor_agent = HARBOR_AGENT_BY_LABEL.get(agent, agent)
     import_path = DEFAULT_AGENT_IMPORT_PATHS.get(agent)
     if import_path:
         command.extend(["--agent-import-path", import_path])
     else:
-        command.extend(["--agent", agent])
+        command.extend(["--agent", harbor_agent])
     if args.n_tasks is not None:
         command.extend(["--n-tasks", str(args.n_tasks)])
     return command, job_dir
