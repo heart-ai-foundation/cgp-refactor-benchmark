@@ -34,6 +34,26 @@ Run the documented full matrix:
 python scripts/run_benchmark.py --preset full
 ```
 
+Before launching agent-backed runs, the runner checks that credentials are
+visible to Harbor. It will auto-use `~/.codex/auth.json` for Codex when present;
+otherwise export one of the supported auth variables before running:
+
+```bash
+export CODEX_AUTH_JSON_PATH="$HOME/.codex/auth.json"  # or OPENAI_API_KEY
+export ANTHROPIC_API_KEY="..."                       # or CLAUDE_CODE_OAUTH_TOKEN
+export GEMINI_API_KEY="..."                          # or Google Vertex/GCA auth
+```
+
+The runner prints per-trial progress while Harbor is active:
+
+```text
+[baseline/codex/r1] TRIAL COMPLETE ccx-migration-026__...: reward=...
+[baseline/codex/r1] TRIAL ERROR ccx-migration-107__...: NonZeroAgentExitCodeError
+```
+
+These announcements are emitted only when a task trial finishes or errors, not
+on a fixed chatty timer.
+
 The one-command runner passes explicit Harbor models for each default agent:
 
 - `codex=openai/gpt-5-codex`
